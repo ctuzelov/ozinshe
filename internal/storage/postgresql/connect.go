@@ -8,11 +8,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Storage struct {
+type Postgres struct {
 	db *sql.DB
 }
 
-func New(cnf *config.Config) (*Storage, error) {
+func NewPostgres(cnf *config.Config) (*Postgres, error) {
 	const op = "storage.New"
 
 	db, err := sql.Open("postgres", "postgresql://"+cnf.DB.User+":"+cnf.DB.Password+"@"+cnf.Host+":"+cnf.DB.Port+"/"+cnf.DB.Dbname+"?sslmode="+cnf.DB.Sslmode)
@@ -27,5 +27,5 @@ func New(cnf *config.Config) (*Storage, error) {
 
 	fmt.Println(op, "connected successfully")
 
-	return &Storage{db: db}, nil
+	return &Postgres{db: db}, nil
 }
