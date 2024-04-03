@@ -11,10 +11,10 @@ dropdb:
 	docker exec -it postgres12 dropdb ozinshe
 
 migrateup:
-	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path db/migration up
+	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path migrations up
 
 migratedown:
-	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path db/migration down
+	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path migrations down
 
 sqlc:
 	sqlc generate
