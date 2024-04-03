@@ -1,3 +1,4 @@
+env: "local"
 host: "localhost"
 port: "8080"
 token_ttl: 1h
