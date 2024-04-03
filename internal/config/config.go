@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	Env      string   `yaml:"env"`
 	Host     string   `yaml:"host"`
 	Port     string   `yaml:"port"`
 	TokenTTL string   `yaml:"token_ttl"`
