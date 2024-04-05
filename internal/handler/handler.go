@@ -25,5 +25,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.POST("/signup", h.SignUp)
 	router.POST("/signin", h.SignIn)
 
+	router.GET("/signout", h.Signout).Use()
+
 	return router
 }
