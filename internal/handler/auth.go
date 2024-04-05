@@ -65,5 +65,17 @@ func (h *Handler) SignIn(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("token", token, 3600, "/", "", false, true)
+
 	c.JSON(http.StatusOK, gin.H{"token": token, "refresh_token": refresh_token})
+}
+
+func (h *Handler) Signout(c *gin.Context) {
+    // Clear token cookie
+    c.SetCookie("token", "", -1, "/", "", false, true) 
+
+    // Clear refresh token cookie
+    c.SetCookie("refresh_token", "", -1, "/", "", false, true) 
+
+    c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }
