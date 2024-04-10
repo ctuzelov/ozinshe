@@ -6,6 +6,6 @@ CREATE TABLE users (
     date_of_birth  DATE NOT NULL,
     user_type      VARCHAR(255) NOT NULL,
     password       VARCHAR(255) NOT NULL,
-    token          TEXT NOT NULL,
-    refresh_token  TEXT NOT NULL
+    token          TEXT,
+    refresh_token  TEXT
 );
