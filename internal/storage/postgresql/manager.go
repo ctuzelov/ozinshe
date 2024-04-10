@@ -9,6 +9,7 @@ type User interface {
 	SaveUser(ctx context.Context, user models.User) error
 	GetByEmail(ctx context.Context, email string) (models.User, error)
 	UpdateTokens(signedToken string, signedRefreshToken string, user_type string) error
+	DeleteTokens(ctx context.Context, email string) error
 }
 
 type Storage struct {

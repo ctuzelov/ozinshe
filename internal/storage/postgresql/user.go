@@ -88,3 +88,19 @@ func (u *UserStorage) UpdateTokens(signedToken string, signedRefreshToken string
 
 	return nil
 }
+
+func (u *UserStorage) DeleteTokens(ctx context.Context, email string) error {
+	const op = "storage.user.GetByToken"
+
+	stmt, err := u.storage.db.Prepare("UPDATE users SET token = NULL, refresh_token = NULL WHERE email = $1")
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	_, err = stmt.ExecContext(ctx, email)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}

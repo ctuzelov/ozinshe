@@ -77,11 +77,17 @@ func (h *Handler) SignIn(c *gin.Context) {
 func (h *Handler) Signout(c *gin.Context) {
 	data := c.MustGet("data").(*Data)
 	if !data.IsAuthorized {
-		h.errorpage(c, http.StatusBadRequest, errors.New("user not authorized"), "sign out failed")
+		return
+	}
+
+	err := h.Service.DeleteTokensByEmail(data.User.Email)
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "user logout failed")
 		return
 	}
 
 	c.SetCookie("token", "", -1, "/", "", false, true)
 	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+
 	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }

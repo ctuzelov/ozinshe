@@ -90,3 +90,16 @@ func (a *UserService) UpdateAllTokens(signedToken string, signedRefreshToken str
 
 	return signedToken, signedRefreshToken, nil
 }
+
+func (a *UserService) DeleteTokensByEmail(email string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	const op = "service.user.DeleteTokensByEmail"
+
+	err := a.Storage.DeleteTokens(ctx, email)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
