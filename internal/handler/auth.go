@@ -9,17 +9,24 @@ import (
 )
 
 type entryForm struct {
-	Email            string `json:"email"`
-	Password         string `json:"password"`
-	Confirm_password string `json:"confirm_password"`
+	Email            string `form:"email"`
+	Password         string `form:"password"`
+	Confirm_password string `form:"confirm_password"`
+}
+
+func (h *Handler) SignUpPage(c *gin.Context) {
+	h.render(c, http.StatusOK, "signup.html", nil)
+}
+
+func (h *Handler) SignInPage(c *gin.Context) {
+	h.render(c, http.StatusOK, "signin.html", nil)
 }
 
 func (h *Handler) SignUp(c *gin.Context) {
 	var form entryForm
 
-	if err := c.ShouldBindJSON(&form); err != nil {
-		// TODO: send status code
-		h.Log.Error("error in binding json", err)
+	if err := c.ShouldBind(&form); err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "binding json in sign up")
 		return
 	}
 
@@ -31,26 +38,24 @@ func (h *Handler) SignUp(c *gin.Context) {
 	})
 
 	if err != nil {
-		// TODO: send status code
-		h.Log.Error("User registration failed", err)
+		h.errorpage(c, http.StatusBadRequest, err, "user registration failed")
 	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 }
 
 func (h *Handler) SignIn(c *gin.Context) {
 	var form entryForm
 
-	if err := c.ShouldBindJSON(&form); err != nil {
-		// TODO: send status code
-		h.Log.Error("error in binding json", err)
+	if err := c.ShouldBind(&form); err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "binding json in sign in")
 		return
 	}
 
 	// TODO: validate form
 
 	if form.Password != form.Confirm_password {
-		// TODO: send status code
-		h.Log.Error("User login failed", errors.New("passwords don't match"))
-		c.JSON(http.StatusBadRequest, gin.H{"error": "passwords don't match"})
+		h.errorpage(c, http.StatusBadRequest, errors.New("passwords don't match"), "sign in failed")
 		return
 	}
 
@@ -60,8 +65,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		h.Log.With("User login failed", err)
+		h.errorpage(c, http.StatusBadRequest, err, "user login failed")
 		return
 	}
 
@@ -71,11 +75,13 @@ func (h *Handler) SignIn(c *gin.Context) {
 }
 
 func (h *Handler) Signout(c *gin.Context) {
-    // Clear token cookie
-    c.SetCookie("token", "", -1, "/", "", false, true) 
+	data := c.MustGet("data").(*Data)
+	if !data.IsAuthorized {
+		h.errorpage(c, http.StatusBadRequest, errors.New("user not authorized"), "sign out failed")
+		return
+	}
 
-    // Clear refresh token cookie
-    c.SetCookie("refresh_token", "", -1, "/", "", false, true) 
-
-    c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+	c.SetCookie("token", "", -1, "/", "", false, true)
+	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }
