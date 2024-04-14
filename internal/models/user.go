@@ -10,6 +10,7 @@ type User struct {
 	DateOfBirth   time.Time `json:"date_of_birth,omitempty" validate:"required"`
 	UserType      string    `json:"user_type,omitempty" validate:"required"`
 	Password      string    `json:"password,omitempty" validate:"required,min=6"`
+	Created_at    time.Time `json:"created_at,omitempty"`
 	Token         string    `json:"token,omitempty"`
 	Refresh_Token string    `json:"refresh_token,omitempty"`
 	User_id       string    `json:"user_id,omitempty"`

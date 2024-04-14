@@ -29,15 +29,64 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.StaticFS("/ui/assets/", http.Dir("./ui/assets/"))
 
-	router.Use(h.Middleware)
-
 	router.GET("/", h.HomePage)
 	router.GET("/signup", h.SignUpPage)
 	router.GET("/signin", h.SignInPage)
 	router.POST("/signup", h.SignUp)
 	router.POST("/signin", h.SignIn)
 
-	router.GET("/signout", h.Signout)
+	authGroup := router.Group("/", h.Middleware)
+	{
+		authGroup.GET("/signout", h.Signout)
+
+		authGroup.GET("/users", h.GetAllUsers)
+		authGroup.GET("/user/:id", h.GetUser)
+
+		projectGroup := authGroup.Group("/projects")
+		{
+			projectGroup.GET("/", h.GetFilteredProjects)
+			projectGroup.POST("/create-project", h.CreateProject)
+			projectGroup.GET("/:id", h.ProjectPage)
+			projectGroup.DELETE("/:id", h.DeleteProject)
+			projectGroup.PUT("/:id", h.UpdateProject)
+		}
+
+		movieGroup := authGroup.Group("/movies")
+		{
+			movieGroup.GET("/", h.GetFilteredMovies)
+			movieGroup.GET("/:id", h.GetMovie)
+			movieGroup.POST("/create-movie", h.CreateMovie)
+			movieGroup.DELETE("/:id", h.DeleteMovie)
+			movieGroup.PUT("/:id", h.UpdateMovie)
+		}
+
+		seriesGroup := authGroup.Group("/series")
+		{
+			seriesGroup.GET("/", h.GetFilteredSeries)
+			seriesGroup.GET("/:id", h.GetSeries)
+			seriesGroup.POST("/create-series", h.CreateSeries)
+			seriesGroup.DELETE("/:id", h.DeleteSeries)
+			seriesGroup.PUT("/:id", h.UpdateSeries)
+			
+			seasonGroup := seriesGroup.Group("/seasons")
+			{
+				seasonGroup.GET("/:id", h.GetSeason)
+			}
+
+			episodeGroup := seriesGroup.Group("/episodes")
+			{
+				episodeGroup.GET("/:id", h.GetEpisode)
+			}
+		}
+
+		genreGroup := authGroup.Group("/genres")
+		{
+			genreGroup.GET("/", h.GetAllGenres)
+			genreGroup.GET("/:id", h.GetGenre)
+			genreGroup.POST("/", h.CreateGenre)
+			genreGroup.DELETE("/:id", h.DeleteGenre)
+		}
+	}
 
 	return router
 }
