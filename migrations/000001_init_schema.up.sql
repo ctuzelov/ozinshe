@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS episodes (
 CREATE TABLE IF NOT EXISTS movie_covers(
     id SERIAL PRIMARY KEY,
     movie_id INTEGER NOT NULL,
-    name VARCHAR(255) NOT NULL,
     filename VARCHAR(255) NOT NULL,
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
 );
@@ -71,7 +70,6 @@ CREATE TABLE IF NOT EXISTS movie_covers(
 CREATE TABLE IF NOT EXISTS series_covers(
     id SERIAL PRIMARY KEY,
     series_id INTEGER NOT NULL,
-    name VARCHAR(255) NOT NULL,
     filename VARCHAR(255) NOT NULL,
     FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 );
@@ -79,7 +77,6 @@ CREATE TABLE IF NOT EXISTS series_covers(
 CREATE TABLE IF NOT EXISTS movie_screenshots(
     id SERIAL PRIMARY KEY,
     movie_id INTEGER NOT NULL,
-    name VARCHAR(255) NOT NULL,
     filename VARCHAR(255) NOT NULL,
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
 );
@@ -87,7 +84,6 @@ CREATE TABLE IF NOT EXISTS movie_screenshots(
 CREATE TABLE IF NOT EXISTS series_screenshots(
     id SERIAL PRIMARY KEY,
     series_id INTEGER NOT NULL,
-    name VARCHAR(255) NOT NULL,
     filename VARCHAR(255) NOT NULL,
     FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 );

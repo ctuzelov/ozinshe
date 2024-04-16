@@ -55,7 +55,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			movieGroup.GET("/", h.GetFilteredMovies)
 			movieGroup.GET("/:id", h.GetMovie)
-			movieGroup.POST("/create-movie", h.CreateMovie)
 			movieGroup.DELETE("/:id", h.DeleteMovie)
 			movieGroup.PUT("/:id", h.UpdateMovie)
 		}
@@ -64,10 +63,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			seriesGroup.GET("/", h.GetFilteredSeries)
 			seriesGroup.GET("/:id", h.GetSeries)
-			seriesGroup.POST("/create-series", h.CreateSeries)
 			seriesGroup.DELETE("/:id", h.DeleteSeries)
 			seriesGroup.PUT("/:id", h.UpdateSeries)
-			
+
 			seasonGroup := seriesGroup.Group("/seasons")
 			{
 				seasonGroup.GET("/:id", h.GetSeason)
