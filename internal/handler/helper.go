@@ -58,6 +58,4 @@ func (h *Handler) errorpage(c *gin.Context, status int, err error, errortype str
 	if status == http.StatusInternalServerError {
 		errdata.Message = "Something went wrong. Please try again later."
 	}
-
-	h.render(c, status, "error.html", errdata)
 }
