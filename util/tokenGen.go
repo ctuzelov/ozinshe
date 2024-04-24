@@ -10,12 +10,14 @@ import (
 
 var SECRET_KEY string = os.Getenv("SECRET_KEY")
 
-func GenerateAllTokens(email string, name string, user_type string) (signedToken, signedRefreshToken string, err error) {
+func GenerateAllTokens(email string, name string, user_type string, uid string) (signedToken, signedRefreshToken string, err error) {
+	const op = "util.GenerateAllTokens"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":     email,
 		"name":      name,
 		"user_type": user_type,
+		"uid":       uid,
 		"exp":       time.Now().Add(time.Hour * time.Duration(24)).Unix(),
 	})
 
@@ -23,17 +25,18 @@ func GenerateAllTokens(email string, name string, user_type string) (signedToken
 		"email":     email,
 		"name":      name,
 		"user_type": user_type,
+		"uid":       uid,
 		"exp":       time.Now().Local().Add(time.Hour * time.Duration(169)).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(SECRET_KEY))
 	if err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	refreshString, err := refresh.SignedString([]byte(SECRET_KEY))
 	if err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	return tokenString, refreshString, nil
