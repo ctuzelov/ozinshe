@@ -16,6 +16,9 @@ migrateup:
 migratedown:
 	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path migrations down
 
+fixdirty:
+	migrate -database 'postgresql://root:123@localhost:5432/ozinshe?sslmode=disable' -path migrations force 1 
+
 sqlc:
 	sqlc generate
 
