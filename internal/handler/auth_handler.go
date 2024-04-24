@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"ozinshe/internal/models"
+	"ozinshe/internal/validation"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,15 +31,27 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
-	// TODO: validate form
-
-	err := h.Service.Register(models.User{
+	user := models.User{
 		Email:    form.Email,
 		Password: form.Password,
-	})
+	}
+
+	if user.Email == "" || user.Password == "" {
+		h.errorpage(c, http.StatusBadRequest, errors.New("email or password is empty"), "sign up failed")
+		return
+	}
+
+	err := validation.GetErrMsg(user)
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "sign up failed")
+		return
+	}
+
+	err = h.Service.Register(user)
 
 	if err != nil {
 		h.errorpage(c, http.StatusBadRequest, err, "user registration failed")
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
@@ -52,7 +65,21 @@ func (h *Handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	// TODO: validate form
+	user := models.User{
+		Email:    form.Email,
+		Password: form.Password,
+	}
+
+	if user.Email == "" || user.Password == "" {
+		h.errorpage(c, http.StatusBadRequest, errors.New("email or password is empty"), "sign up failed")
+		return
+	}
+
+	err := validation.GetErrMsg(user)
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "sign up failed")
+		return
+	}
 
 	if form.Password != form.Confirm_password {
 		h.errorpage(c, http.StatusBadRequest, errors.New("passwords don't match"), "sign in failed")
