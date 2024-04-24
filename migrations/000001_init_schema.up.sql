@@ -13,13 +13,14 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS genres (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS age_categories (
     id SERIAL PRIMARY KEY,
     min_age INT NOT NULL,
-    max_age INT NOT NULL
+    max_age INT NOT NULL,
+    range VARCHAR(10) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS movies (
@@ -28,10 +29,16 @@ CREATE TABLE IF NOT EXISTS movies (
     release_year INT NOT NULL,
     description TEXT NOT NULL,
     popularity INT,
-    youtube_id VARCHAR(11) UNIQUE,
+    youtube_id VARCHAR(100) UNIQUE,
     duration INT NOT NULL,
     director VARCHAR(100) NOT NULL,
     producer VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS projects(
+    id SERIAL PRIMARY KEY,
+    project_type VARCHAR(255) NOT NULL,
+    project_id INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS series (
@@ -45,6 +52,7 @@ CREATE TABLE IF NOT EXISTS series (
     producer VARCHAR(100) NOT NULL
 );
 
+
 CREATE TABLE IF NOT EXISTS seasons (
     id SERIAL PRIMARY KEY,
     series_id INT NOT NULL,
@@ -56,7 +64,7 @@ CREATE TABLE IF NOT EXISTS episodes (
     id SERIAL PRIMARY KEY,
     season_id INT NOT NULL,
     episode_number INT NOT NULL,
-    youtube_id VARCHAR(11),
+    youtube_id VARCHAR(100) NOT NULL UNIQUE,
     FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE
 );
 
@@ -91,50 +99,58 @@ CREATE TABLE IF NOT EXISTS series_screenshots(
 CREATE TABLE IF NOT EXISTS movie_genres (
     movie_id INT NOT NULL,
     genre_id INT NOT NULL,
-    FOREIGN KEY (movie_id) REFERENCES movies(id),
-    FOREIGN KEY (genre_id) REFERENCES genres(id)
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+    FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS series_genres (
     series_id INT NOT NULL,
     genre_id INT NOT NULL,
-    FOREIGN KEY (series_id) REFERENCES series(id),
-    FOREIGN KEY (genre_id) REFERENCES genres(id)
+    FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
+    FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS movie_age_categories (
     movie_id INT NOT NULL,
     age_category_id INT NOT NULL,
-    FOREIGN KEY (movie_id) REFERENCES movies(id),
-    FOREIGN KEY (age_category_id) REFERENCES age_categories(id)
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+    FOREIGN KEY (age_category_id) REFERENCES age_categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS series_age_categories (
     series_id INT NOT NULL,
     age_category_id INT NOT NULL,
-    FOREIGN KEY (series_id) REFERENCES series(id),
-    FOREIGN KEY (age_category_id) REFERENCES age_categories(id)
+    FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
+    FOREIGN KEY (age_category_id) REFERENCES age_categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS favorite_movies (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    movie_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL UNIQUE,
+    movie_id INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS favorite_series (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    series_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL UNIQUE,
+    series_id INTEGER NOT NULL UNIQUE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS favorite_projects (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE,
+    project_id INTEGER NOT NULL UNIQUE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS key_words (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS movie_key_words (
