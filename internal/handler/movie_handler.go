@@ -1,105 +1,125 @@
 package handler
 
 import (
+	"encoding/json"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"ozinshe/internal/models"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type movieForm struct {
-	Link        string `form:"link"`
-	Title       string `form:"title"`
-	Genres      string `form:"genre"`
-	Year        int    `form:"year"`
-	Keywords    string `form:"keywords"`
-	Duration    int    `form:"duration"`
-	Producer    string `form:"producer"`
-	Director    string `form:"director"`
-	Description string `form:"description"`
-	AgeCategory string `form:"age_category"`
+	Link        string   `json:"link"`
+	Title       string   `json:"title"`
+	Genres      []string `json:"genres"`
+	Year        int      `json:"year"`
+	Keywords    []string `json:"keywords"`
+	Duration    int      `json:"duration"`
+	Producer    string   `json:"producer"`
+	Director    string   `json:"director"`
+	Description string   `json:"description"`
+	AgeCategory string   `json:"age_category"`
 }
 
-const maxImageSize = 15 * 1024 * 1024 // 2 MB limit
+const maxImageSize = 15 * 1024 * 1024 // 15 MB limit
 
-func (h *Handler) CreateMovie(c *gin.Context, form *multipart.Form) {
-	var movie_form movieForm
-
-	if err := c.ShouldBind(&movie_form); err != nil {
-		h.errorpage(c, http.StatusBadRequest, err, "binding form in create movie")
-		return
-	}
-
-	movie_genres, movie_ages, movie_keywords := ProcessParsing(movie_form.Genres, movie_form.Keywords, movie_form.AgeCategory)
-
-	movie := models.Movie{
-		Title:         movie_form.Title,
-		ReleaseYear:   movie_form.Year,
-		Duration:      movie_form.Duration,
-		Genres:        movie_genres,
-		Keywords:      movie_keywords,
-		Description:   movie_form.Description,
-		Producer:      movie_form.Producer,
-		Director:      movie_form.Director,
-		YoutubeID:     movie_form.Link,
-		AgeCategories: movie_ages,
-	}
-
-	currentDir, err := os.Getwd()
+func (h *Handler) CreateMovie(c *gin.Context, form *multipart.Form, project *models.Project) {
+	movieJSON := c.PostForm("movie_data")
+	var movie movieForm
+	err := json.Unmarshal([]byte(movieJSON), &movie)
 	if err != nil {
-		h.errorpage(c, http.StatusInternalServerError, err, "getting current dir")
+		h.errorpage(c, http.StatusBadRequest, err, "error parsing series JSON")
 		return
 	}
-	path := currentDir + "/../uploads/movies/"
 
-	images_data := models.SavePhoto{
-		File_form:    form,
-		UploadPath:   path,
-		MaxImageSize: maxImageSize,
+	Genres, AgeCategories, Keywords := ProcessParsing(movie.Genres, movie.AgeCategory, movie.Keywords)
+
+	movie_data := models.Movie{
+		Title:         movie.Title,
+		ReleaseYear:   movie.Year,
+		Duration:      movie.Duration,
+		Description:   movie.Description,
+		Producer:      movie.Producer,
+		Director:      movie.Director,
+		YoutubeID:     movie.Link,
+		Genres:        Genres,
+		Keywords:      Keywords,
+		AgeCategories: AgeCategories,
 	}
 
-	id, err := h.Service.Movie.Add(movie, images_data)
+	images_data, err := ProcessSavePhoto(form, "movies")
 	if err != nil {
 		h.errorpage(c, http.StatusInternalServerError, err, "adding movie")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"successfully created with id - ": id})
+	id, err := h.Service.Movie.Add(movie_data, images_data)
+	if err != nil {
+		h.errorpage(c, http.StatusInternalServerError, err, "adding movie")
+		return
+	}
+
+	project.Project_type = "movie"
+	project.Project_id = id
 }
 
-func ProcessParsing(Genres, AgeCategory, Keywords string) ([]models.Genre, []models.AgeCategory, []models.Keyword) {
-
-	genres := strings.Split(Genres, ",")
-	keywords := strings.Split(Keywords, ",")
-	ageCategory := strings.Split(AgeCategory, ",")
-
-	movie_genres := []models.Genre{}
-	for _, genre := range genres {
-		movie_genres = append(movie_genres, models.Genre{Name: genre})
+func (h *Handler) UpdateMovie(c *gin.Context, form *multipart.Form, movieID int, updated *bool) {
+	movieJSON := c.PostForm("movie_data")
+	var movie movieForm
+	err := json.Unmarshal([]byte(movieJSON), &movie)
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "error parsing series JSON")
+		return
 	}
 
-	movie_ages := []models.AgeCategory{}
-	for _, age := range ageCategory {
-		ages := strings.Split(age, "-")
-		min_age, _ := strconv.Atoi(ages[0])
-		max_age, _ := strconv.Atoi(ages[1])
-		movie_ages = append(movie_ages, models.AgeCategory{MinAge: min_age, MaxAge: max_age})
+	Genres, AgeCategories, Keywords := ProcessParsing(movie.Genres, movie.AgeCategory, movie.Keywords)
+
+	movie_data := models.Movie{
+		Title:         movie.Title,
+		ReleaseYear:   movie.Year,
+		Duration:      movie.Duration,
+		Description:   movie.Description,
+		Producer:      movie.Producer,
+		Director:      movie.Director,
+		YoutubeID:     movie.Link,
+		Genres:        Genres,
+		Keywords:      Keywords,
+		AgeCategories: AgeCategories,
 	}
 
-	movie_keywords := []models.Keyword{}
-	for _, keyword := range keywords {
-		movie_keywords = append(movie_keywords, models.Keyword{Name: keyword})
+	images_data, err := ProcessSavePhoto(form, "movies")
+	if err != nil {
+		h.errorpage(c, http.StatusInternalServerError, err, "adding movie")
+		return
 	}
 
-	return movie_genres, movie_ages, movie_keywords
-}
+	if form.File["cover"] != nil {
+		err := h.Service.Movie.UpdateCover(movieID, images_data)
+		if err != nil {
+			h.errorpage(c, http.StatusInternalServerError, err, "updating movie cover")
+			return
+		}
+	}
 
-func (h *Handler) MoviePage(c *gin.Context) {
-	h.render(c, http.StatusOK, "movie.html", nil)
+	if form.File["screenshots"] != nil {
+		err := h.Service.Movie.UpdateScreenshots(movieID, images_data)
+		if err != nil {
+			h.errorpage(c, http.StatusInternalServerError, err, "updating movie Screenshots")
+			return
+		}
+	}
+
+	err = h.Service.Movie.Update(movieID, movie_data)
+	if err != nil {
+		h.errorpage(c, http.StatusInternalServerError, err, "updating movie")
+		return
+	}
+
+	*updated = true
+
+	c.JSON(http.StatusOK, gin.H{"message": "Movie updated successfully"})
 }
 
 func (h *Handler) GetMovie(c *gin.Context) {
@@ -110,12 +130,14 @@ func (h *Handler) GetFilteredMovies(c *gin.Context) {
 	h.render(c, http.StatusOK, "movie.html", nil)
 }
 
-func (h *Handler) UpdateMovie(c *gin.Context) {
-	h.render(c, http.StatusOK, "movie.html", nil)
-}
-
 func (h *Handler) DeleteMovie(c *gin.Context) {
-	h.render(c, http.StatusOK, "movie.html", nil)
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.Service.Movie.Remove(id)
+	if err != nil {
+		h.errorpage(c, http.StatusInternalServerError, err, "deleting movie")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Movie deleted"})
 }
 
 func (h *Handler) GetAllMovies(c *gin.Context) {
