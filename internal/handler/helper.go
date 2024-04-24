@@ -3,8 +3,12 @@ package handler
 import (
 	"bytes"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"ozinshe/internal/models"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,35 +31,80 @@ func (h *Handler) render(c *gin.Context, status int, page string, data any) {
 
 	err := h.TempCache.ExecuteTemplate(buf, page, data)
 	if err != nil {
-		h.errorpage(c, http.StatusInternalServerError, err, fmt.Sprintf("template error: %s", page)) // Log template name
+		h.errorpage(c, http.StatusInternalServerError, err, fmt.Sprintf("template error: %s", page))
 		return
 	}
 
-	// Handle potential error writing the response
 	_, err = c.Writer.Write(buf.Bytes())
 	if err != nil {
 		h.errorpage(c, http.StatusInternalServerError, err, "error writing response")
 		return
 	}
 
-	c.Header("Content-Type", "text/html; charset=utf-8") // Set header explicitly
-	c.Status(status)                                     // Set status code
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	c.Status(status)
 }
 
 func (h *Handler) errorpage(c *gin.Context, status int, err error, errortype string) {
 	if err != nil {
-		// Consider whether to unwrap or keep error wrapping depending on your debugging needs
-		h.Log.Error("%s: %v", errortype, err) // Clearer formatting
+		h.Log.Error(fmt.Sprintf("%s: %v", errortype, err))
 	}
 
-	// Customize error data based on the situation
 	errdata := ErrorData{
 		Status:  status,
-		Message: http.StatusText(status), // Default message
+		Message: http.StatusText(status),
 	}
 
-	// Optionally provide a more user-friendly message
 	if status == http.StatusInternalServerError {
 		errdata.Message = "Something went wrong. Please try again later."
 	}
+
+	c.JSON(status, errdata)
+	c.Abort()
+}
+
+func ProcessSavePhoto(form *multipart.Form, dst string) (models.SavePhoto, error) {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return models.SavePhoto{}, err
+	}
+	path := currentDir + "/internal/uploads/" + dst + "/"
+
+	images_data := models.SavePhoto{
+		File_form:    form,
+		UploadPath:   path,
+		MaxImageSize: maxImageSize,
+	}
+
+	return images_data, nil
+}
+
+func ProcessParsing(genres []string, ageCategory string, keywords []string) ([]models.Genre, []models.AgeCategory, []models.Keyword) {
+	var Keywords []models.Keyword
+	for _, keyword := range keywords {
+		keyword := models.Keyword{
+			Name: keyword,
+		}
+		Keywords = append(Keywords, keyword)
+	}
+
+	var AgeCategories []models.AgeCategory
+	ages := strings.Split(ageCategory, "-")
+	min_age, _ := strconv.Atoi(ages[0])
+	max_age, _ := strconv.Atoi(ages[1])
+	age_category := models.AgeCategory{
+		MinAge: min_age,
+		MaxAge: max_age,
+	}
+	AgeCategories = append(AgeCategories, age_category)
+
+	var Genres []models.Genre
+	for _, genre := range genres {
+		genre := models.Genre{
+			Name: genre,
+		}
+		Genres = append(Genres, genre)
+	}
+
+	return Genres, AgeCategories, Keywords
 }
