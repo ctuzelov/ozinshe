@@ -37,52 +37,64 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	authGroup := router.Group("/", h.Middleware)
 	{
-		authGroup.GET("/signout", h.Signout)
+		authGroup.GET("/signout", h.MustBeAuthorizedMiddleware, h.Signout)
 
 		authGroup.GET("/users", h.GetAllUsers)
 		authGroup.GET("/user/:id", h.GetUser)
+		authGroup.POST("/change-password", h.MustBeAuthorizedMiddleware, h.ChangePassword)
+		authGroup.POST("/change-profile", h.MustBeAuthorizedMiddleware, h.ChangeProfile)
+		authGroup.DELETE("/user/:id", h.IsAdminMiddlware, h.DeleteUser)
 
 		projectGroup := authGroup.Group("/projects")
 		{
-			projectGroup.GET("/", h.GetFilteredProjects)
-			projectGroup.POST("/create-project", h.CreateProject)
-			projectGroup.GET("/:id", h.ProjectPage)
-			projectGroup.DELETE("/:id", h.DeleteProject)
-			projectGroup.PUT("/:id", h.UpdateProject)
+			projectGroup.GET("/", h.GetAllProjects)
+			projectGroup.GET("/:id", h.GetProject)
+			projectGroup.GET("/search", h.GetFilteredProjects)
+			projectGroup.GET("/favorites", h.MustBeAuthorizedMiddleware, h.GetAllFavorites)
+			projectGroup.POST("/:id/favorite", h.MustBeAuthorizedMiddleware, h.MakeFavorite)
+			projectGroup.DELETE("/:id/favorite", h.MustBeAuthorizedMiddleware, h.RemoveFromFavorites)
+			projectGroup.POST("/create-project", h.IsAdminMiddlware, h.CreateProject)
+			projectGroup.DELETE("/:id", h.IsAdminMiddlware, h.DeleteProject)
+			projectGroup.PUT("/:id", h.IsAdminMiddlware, h.UpdateProject)
 		}
 
 		movieGroup := authGroup.Group("/movies")
 		{
 			movieGroup.GET("/", h.GetFilteredMovies)
 			movieGroup.GET("/:id", h.GetMovie)
-			movieGroup.DELETE("/:id", h.DeleteMovie)
-			movieGroup.PUT("/:id", h.UpdateMovie)
 		}
 
 		seriesGroup := authGroup.Group("/series")
 		{
 			seriesGroup.GET("/", h.GetFilteredSeries)
-			seriesGroup.GET("/:id", h.GetSeries)
-			seriesGroup.DELETE("/:id", h.DeleteSeries)
-			seriesGroup.PUT("/:id", h.UpdateSeries)
+			seriesGroup.GET("/:seriesID", h.GetSeries)
 
 			seasonGroup := seriesGroup.Group("/seasons")
 			{
-				seasonGroup.GET("/:id", h.GetSeason)
+				seasonGroup.GET("/:seasonNumber", h.GetSeason)
+
+				episodeGroup := seriesGroup.Group("/episodes")
+				{
+					episodeGroup.GET("/:episodeID", h.GetEpisode)
+				}
 			}
 
-			episodeGroup := seriesGroup.Group("/episodes")
-			{
-				episodeGroup.GET("/:id", h.GetEpisode)
-			}
 		}
 
 		genreGroup := authGroup.Group("/genres")
 		{
 			genreGroup.GET("/", h.GetAllGenres)
 			genreGroup.GET("/:id", h.GetGenre)
-			genreGroup.POST("/", h.CreateGenre)
-			genreGroup.DELETE("/:id", h.DeleteGenre)
+			genreGroup.POST("/", h.IsAdminMiddlware, h.CreateGenre)
+			genreGroup.DELETE("/:id", h.IsAdminMiddlware, h.DeleteGenre)
+		}
+
+		ageGroup := authGroup.Group("/ages")
+		{
+			ageGroup.GET("/", h.GetAllAgeCategories)
+			ageGroup.GET("/:id", h.GetAgeCategory)
+			ageGroup.POST("/", h.IsAdminMiddlware, h.CreateAgeCategory)
+			ageGroup.DELETE("/:id", h.IsAdminMiddlware, h.DeleteAgeCategory)
 		}
 	}
 
