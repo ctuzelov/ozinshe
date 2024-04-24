@@ -11,8 +11,10 @@ type Series struct {
 	Producer      string        `json:"producer"`
 	Genres        []Genre       `json:"genres"`
 	Cover         Cover         `json:"cover"`
+	Keywords      []Keyword     `json:"keywords"`
 	Screenshots   []Screenshot  `json:"screenshots"`
 	AgeCategories []AgeCategory `json:"age_categories"`
+	Seasons       []Season      `json:"seasons"`
 }
 
 type Season struct {
@@ -26,11 +28,11 @@ type Episode struct {
 	ID            int    `json:"id"`
 	SeasonID      int    `json:"season_id"`
 	EpisodeNumber int    `json:"episode_number"`
-	YoutubeID     string `json:"youtube_id"`
+	Link          string `json:"link"`
 }
 
 type FavoriteSeries struct {
 	ID      int `json:"id"`
 	UserID  int `json:"user_id"`
-	MovieID int `json:"movie_id"`
+	SeriesID int `json:"movie_id"`
 }
