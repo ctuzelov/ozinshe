@@ -18,3 +18,5 @@ DROP TABLE IF EXISTS key_words;
 DROP TABLE IF EXISTS age_categories; 
 DROP TABLE IF EXISTS genres;
 DROP TABLE IF EXISTS users; 
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS favorite_projects;
