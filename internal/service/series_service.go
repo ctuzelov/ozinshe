@@ -308,3 +308,17 @@ func (series *SeriesService) GetFiltered(filter models.FilterParams) ([]models.S
 
 	return seriesWithYear, nil
 }
+
+func (s *SeriesService) GetEpisode(seriesID, seasonNumber, episodeNumber int) (models.Episode, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	const op = "service.series.GetEpisode"
+
+	episode, err := s.Storage.GetEpisode(ctx, seriesID, seasonNumber, episodeNumber)
+	if err != nil {
+		return models.Episode{}, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return episode, nil
+}

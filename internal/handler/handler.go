@@ -3,8 +3,13 @@ package handler
 import (
 	"html/template"
 	"log/slog"
-	"net/http"
 	"ozinshe/internal/service"
+
+	_ "ozinshe/docs"
+	_ "ozinshe/internal/models"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,22 +21,18 @@ type Handler struct {
 }
 
 func New(service *service.Service, log *slog.Logger) *Handler {
-	cache, _ := template.ParseGlob("ui/html/*.html") // TODO: handle the potential error
 	return &Handler{
-		Service:   service,
-		Log:       log,
-		TempCache: cache,
+		Service: service,
+		Log:     log,
 	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
-	router.StaticFS("/ui/assets/", http.Dir("./ui/assets/"))
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("/", h.HomePage)
-	router.GET("/signup", h.SignUpPage)
-	router.GET("/signin", h.SignInPage)
 	router.POST("/signup", h.SignUp)
 	router.POST("/signin", h.SignIn)
 
@@ -39,7 +40,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		authGroup.GET("/signout", h.MustBeAuthorizedMiddleware, h.Signout)
 
-		authGroup.GET("/users", h.GetAllUsers)
+		authGroup.GET("/users", h.IsAdminMiddlware, h.GetAllUsers)
 		authGroup.GET("/user/:id", h.GetUser)
 		authGroup.POST("/change-password", h.MustBeAuthorizedMiddleware, h.ChangePassword)
 		authGroup.POST("/change-profile", h.MustBeAuthorizedMiddleware, h.ChangeProfile)
@@ -60,13 +61,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		movieGroup := authGroup.Group("/movies")
 		{
-			movieGroup.GET("/", h.GetFilteredMovies)
+			movieGroup.GET("/", h.GetAllMovies)
 			movieGroup.GET("/:id", h.GetMovie)
 		}
 
 		seriesGroup := authGroup.Group("/series")
 		{
-			seriesGroup.GET("/", h.GetFilteredSeries)
+			seriesGroup.GET("/", h.GetAllSeries)
 			seriesGroup.GET("/:seriesID", h.GetSeries)
 
 			seasonGroup := seriesGroup.Group("/seasons")

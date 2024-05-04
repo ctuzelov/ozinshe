@@ -1,0 +1,1192 @@
+basePath: /
+definitions:
+  handler.Contents:
+    properties:
+      movies:
+        items:
+          $ref: '#/definitions/models.Movie'
+        type: array
+      series:
+        items:
+          $ref: '#/definitions/models.Series'
+        type: array
+    type: object
+  handler.Episode:
+    properties:
+      episode_link:
+        type: string
+    type: object
+  handler.ErrorData:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  handler.NewPassword:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    type: object
+  handler.ProfileData:
+    properties:
+      date_of_birth:
+        type: string
+      name:
+        type: string
+      number:
+        type: string
+      password:
+        type: string
+    type: object
+  handler.Season:
+    properties:
+      season_episodes:
+        items:
+          $ref: '#/definitions/handler.Episode'
+        type: array
+    type: object
+  handler.Series:
+    properties:
+      series_age_category:
+        type: string
+      series_description:
+        type: string
+      series_director:
+        type: string
+      series_duration:
+        type: integer
+      series_genres:
+        items:
+          type: string
+        type: array
+      series_keywords:
+        description: Consider an array for keywords
+        items:
+          type: string
+        type: array
+      series_producer:
+        type: string
+      series_seasons:
+        items:
+          $ref: '#/definitions/handler.Season'
+        type: array
+      series_title:
+        type: string
+      series_year:
+        type: integer
+    type: object
+  handler.entryForm:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handler.movieForm:
+    properties:
+      movie_age_category:
+        type: string
+      movie_description:
+        type: string
+      movie_director:
+        type: string
+      movie_duration:
+        type: integer
+      movie_genres:
+        items:
+          type: string
+        type: array
+      movie_keywords:
+        items:
+          type: string
+        type: array
+      movie_link:
+        type: string
+      movie_producer:
+        type: string
+      movie_title:
+        type: string
+      movie_year:
+        type: integer
+    type: object
+  models.AgeCategory:
+    properties:
+      id:
+        type: integer
+      max_age:
+        type: integer
+      min_age:
+        type: integer
+    type: object
+  models.Cover:
+    properties:
+      filename:
+        type: string
+      id:
+        type: integer
+      project_id:
+        type: integer
+    type: object
+  models.Episode:
+    properties:
+      episode_number:
+        type: integer
+      id:
+        type: integer
+      link:
+        type: string
+      season_id:
+        type: integer
+    type: object
+  models.Genre:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Keyword:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Movie:
+    properties:
+      age_categories:
+        items:
+          $ref: '#/definitions/models.AgeCategory'
+        type: array
+      cover:
+        $ref: '#/definitions/models.Cover'
+      description:
+        type: string
+      director:
+        type: string
+      duration:
+        type: integer
+      genres:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
+      id:
+        type: integer
+      keywords:
+        items:
+          $ref: '#/definitions/models.Keyword'
+        type: array
+      popularity:
+        type: integer
+      producer:
+        type: string
+      release_year:
+        type: integer
+      screenshots:
+        items:
+          $ref: '#/definitions/models.Screenshot'
+        type: array
+      title:
+        type: string
+      youtube_id:
+        type: string
+    type: object
+  models.Project:
+    properties:
+      id:
+        type: integer
+      movies:
+        items:
+          $ref: '#/definitions/models.Movie'
+        type: array
+      project_id:
+        type: integer
+      project_type:
+        type: string
+      series:
+        items:
+          $ref: '#/definitions/models.Series'
+        type: array
+    type: object
+  models.Screenshot:
+    properties:
+      filename:
+        type: string
+      id:
+        type: integer
+      project_id:
+        type: integer
+    type: object
+  models.Season:
+    properties:
+      episodes:
+        items:
+          $ref: '#/definitions/models.Episode'
+        type: array
+      id:
+        type: integer
+      season_number:
+        type: integer
+      series_id:
+        type: integer
+    type: object
+  models.Series:
+    properties:
+      age_categories:
+        items:
+          $ref: '#/definitions/models.AgeCategory'
+        type: array
+      cover:
+        $ref: '#/definitions/models.Cover'
+      description:
+        type: string
+      director:
+        type: string
+      duration:
+        type: integer
+      genres:
+        items:
+          $ref: '#/definitions/models.Genre'
+        type: array
+      id:
+        type: integer
+      keywords:
+        items:
+          $ref: '#/definitions/models.Keyword'
+        type: array
+      popularity:
+        type: integer
+      producer:
+        type: string
+      release_year:
+        type: integer
+      screenshots:
+        items:
+          $ref: '#/definitions/models.Screenshot'
+        type: array
+      seasons:
+        items:
+          $ref: '#/definitions/models.Season'
+        type: array
+      title:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 50
+        minLength: 2
+        type: string
+      number:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      refresh_token:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: string
+      user_type:
+        type: string
+    required:
+    - date_of_birth
+    - email
+    - name
+    - number
+    - password
+    - user_type
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Type "JWT" token received from the server
+  title: Ozinshe API
+  version: "1.0"
+paths:
+  /ages:
+    get:
+      description: Retrieves a list of all age categories in the system.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of age categories
+          schema:
+            items:
+              $ref: '#/definitions/models.AgeCategory'
+            type: array
+        "400":
+          description: Error retrieving age categories
+          schema: {}
+      summary: Get a list of all age categories
+      tags:
+      - age categories
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a new age category based on the provided age range. Requires
+        admin authorization.
+      parameters:
+      - description: Age range (e.g., '18-30')
+        in: formData
+        name: age
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Age category created
+        "400":
+          description: Error creating age category
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Create a new age category
+      tags:
+      - age categories
+  /ages/{id}:
+    delete:
+      description: Deletes an existing age category based on the provided ID.Requires
+        admin authorization.
+      parameters:
+      - description: Age category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Age category deleted successfully
+        "400":
+          description: Error deleting age category
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Delete an existing age category
+      tags:
+      - age categories
+    get:
+      description: Retrieves details of an age category based on the provided ID.
+      parameters:
+      - description: Age category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Age category retrieved successfully
+          schema:
+            $ref: '#/definitions/models.AgeCategory'
+        "400":
+          description: Error retrieving age category
+          schema: {}
+      summary: Get details of a specific age category
+      tags:
+      - age categories
+  /change-password:
+    post:
+      consumes:
+      - application/json
+      description: Allows the currently authenticated user to change their password.
+      parameters:
+      - description: New password information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.NewPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password changed successfully
+        "400":
+          description: Error changing password
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Change password
+      tags:
+      - users
+  /change-profile:
+    post:
+      consumes:
+      - application/json
+      description: Allows the currently authenticated user to change their profile
+        information.
+      parameters:
+      - description: New profile information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ProfileData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile changed successfully
+        "400":
+          description: Error changing profile
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Change profile
+      tags:
+      - users
+  /favorites:
+    get:
+      description: Retrieves a list of all projects (movies and series) favorited
+        by the current user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of favorited movies and series
+          schema:
+            items:
+              $ref: '#/definitions/handler.Contents'
+            type: array
+        "400":
+          description: Error getting favorites
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Get a list of all favorited projects (movies and series) for the current
+        user
+      tags:
+      - favorites
+  /genres:
+    get:
+      description: Retrieves a list of all genres.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of genres
+          schema:
+            items:
+              $ref: '#/definitions/models.Genre'
+            type: array
+        "400":
+          description: Error getting genres
+          schema: {}
+      summary: Get a list of all genres
+      tags:
+      - genres
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a new genre with the provided name. Requires admin authorization.
+      parameters:
+      - description: Genre name
+        in: formData
+        name: genre
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Genre created
+        "400":
+          description: Error creating genre
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Create a new genre
+      tags:
+      - genres
+  /genres/{id}:
+    delete:
+      description: Deletes an existing genre based on the provided ID. Requires admin
+        authorization.
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Genre deleted successfully
+        "400":
+          description: Error deleting genre
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Delete an existing genre
+      tags:
+      - genres
+    get:
+      description: Retrieves details of a genre based on the provided ID.
+      parameters:
+      - description: Genre ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Genre details
+          schema:
+            $ref: '#/definitions/models.Genre'
+        "400":
+          description: Error getting genre
+          schema: {}
+      summary: Get details of a specific genre
+      tags:
+      - genres
+  /movies:
+    get:
+      description: Retrieves a list of all movies.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of movies
+          schema:
+            items:
+              $ref: '#/definitions/models.Movie'
+            type: array
+        "400":
+          description: Error getting movies
+          schema: {}
+      summary: Get a list of all movies
+      tags:
+      - movies
+  /movies/{id}:
+    delete:
+      description: Deletes an existing movie based on the provided ID. Requires admin
+        authorization.
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movie deleted successfully
+        "500":
+          description: Error deleting movie
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Delete an existing movie
+      tags:
+      - movies
+    get:
+      description: Retrieves details of a movie based on the provided ID.
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movie details
+          schema:
+            $ref: '#/definitions/models.Movie'
+        "400":
+          description: Error getting movie
+          schema: {}
+      summary: Get details of a specific movie
+      tags:
+      - movies
+  /projects:
+    get:
+      description: Retrieves a list of all projects, including both movies and series.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of movies and series
+          schema:
+            items:
+              $ref: '#/definitions/handler.Contents'
+            type: array
+        "400":
+          description: Error getting projects
+          schema: {}
+      summary: Get a list of all projects (movies and series)
+      tags:
+      - projects
+  /projects/{id}:
+    delete:
+      description: Deletes an existing project based on the provided ID. Requires
+        admin authorization.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project deleted successfully
+        "400":
+          description: Error deleting project
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Delete an existing project (movie or series)
+      tags:
+      - projects
+    get:
+      description: Retrieves details of a project based on the provided ID.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project details (series)
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Error getting project
+          schema: {}
+      summary: Get details of a specific project (movie or series)
+      tags:
+      - projects
+    put:
+      consumes:
+      - multipart/form-data
+      description: Updates an existing project based on the provided ID and form data.
+        Requires admin authorization.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Project cover
+        in: formData
+        name: cover
+        required: true
+        type: file
+      - description: Project screenshots
+        in: formData
+        name: screenshots
+        required: true
+        type: file
+      - description: Project data (JSON)
+        in: body
+        name: movie_data
+        required: true
+        schema:
+          $ref: '#/definitions/handler.movieForm'
+      - description: Project data (JSON)
+        in: body
+        name: series_data
+        required: true
+        schema:
+          $ref: '#/definitions/handler.Series'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project updated successfully
+        "400":
+          description: Error updating project
+          schema:
+            $ref: '#/definitions/handler.ErrorData'
+      security:
+      - CookieAuth: []
+      summary: Update an existing project (movie or series)
+      tags:
+      - projects
+  /projects/{id}/favorites:
+    delete:
+      description: Allows the currently authenticated user to delete a project (movie
+        or series) from their favorites list.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Favorite added successfully
+        "400":
+          description: Error adding to favorites
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Delete a project from favorites
+      tags:
+      - favorites
+    post:
+      description: Allows the currently authenticated user to add a project (movie
+        or series) to their favorites list.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Favorite added successfully
+        "400":
+          description: Error adding to favorites
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Add a project to favorites
+      tags:
+      - favorites
+  /projects/create-project:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a new project based on the provided project type and form
+        data. Requires admin authorization.
+      parameters:
+      - description: Project type (movie or series)
+        in: formData
+        name: project_type
+        required: true
+        type: string
+      - description: Project cover
+        in: formData
+        name: cover
+        required: true
+        type: file
+      - description: Project screenshots
+        in: formData
+        name: screenshots
+        required: true
+        type: file
+      - in: formData
+        name: movie_age_category
+        type: string
+      - in: formData
+        name: movie_description
+        type: string
+      - in: formData
+        name: movie_director
+        type: string
+      - in: formData
+        name: movie_duration
+        type: integer
+      - collectionFormat: csv
+        in: formData
+        items:
+          type: string
+        name: movie_genres
+        type: array
+      - collectionFormat: csv
+        in: formData
+        items:
+          type: string
+        name: movie_keywords
+        type: array
+      - in: formData
+        name: movie_link
+        type: string
+      - in: formData
+        name: movie_producer
+        type: string
+      - in: formData
+        name: movie_title
+        type: string
+      - in: formData
+        name: movie_year
+        type: integer
+      - in: formData
+        name: series_age_category
+        type: string
+      - in: formData
+        name: series_description
+        type: string
+      - in: formData
+        name: series_director
+        type: string
+      - in: formData
+        name: series_duration
+        type: integer
+      - collectionFormat: csv
+        in: formData
+        items:
+          type: string
+        name: series_genres
+        type: array
+      - collectionFormat: csv
+        description: Consider an array for keywords
+        in: formData
+        items:
+          type: string
+        name: series_keywords
+        type: array
+      - in: formData
+        name: series_producer
+        type: string
+      - in: formData
+        name: series_title
+        type: string
+      - in: formData
+        name: series_year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project created successfully
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Error creating project
+          schema:
+            $ref: '#/definitions/handler.ErrorData'
+      security:
+      - CookieAuthc: []
+      summary: Create a new project (movie or series)
+      tags:
+      - projects
+  /projects/search:
+    get:
+      description: Retrieves a list of projects (movies or series) matching the provided
+        filter parameters.
+      parameters:
+      - description: Starting year for filter
+        in: query
+        name: year_start
+        type: integer
+      - description: Ending year for filter
+        in: query
+        name: year_end
+        type: integer
+      - description: Project type (movie or series)
+        in: query
+        name: project_type
+        type: string
+      - description: Popularity order (asc or desc)
+        in: query
+        name: popularity_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Filtered list of movies and series
+          schema:
+            items:
+              $ref: '#/definitions/handler.Contents'
+            type: array
+        "400":
+          description: Error getting filtered projects
+          schema: {}
+      summary: Get a filtered list of projects (movies or series) based on search
+        criteria
+      tags:
+      - projects
+  /series:
+    get:
+      description: Retrieves a list of all series.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of series
+          schema:
+            items:
+              $ref: '#/definitions/models.Series'
+            type: array
+        "400":
+          description: Error getting series
+          schema: {}
+      summary: Get a list of all series
+      tags:
+      - series
+  /series/{id}:
+    delete:
+      description: Deletes a series based on the provided ID.
+      parameters:
+      - description: Series ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Series deleted successfully
+        "400":
+          description: Invalid parameters
+          schema: {}
+        "500":
+          description: Error deleting series
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a series
+      tags:
+      - series
+  /series/{seriesID}:
+    get:
+      description: Retrieves details of a series based on the provided ID.
+      parameters:
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Series details
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Error getting series
+          schema: {}
+      summary: Get details of a specific series
+      tags:
+      - series
+  /series/{seriesID}/seasons/{seasonNumber}/episodes:
+    get:
+      description: Retrieves episodes of a specific season of a series based on the
+        provided series ID and season number.
+      parameters:
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      - description: Season Number
+        in: path
+        name: seasonNumber
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of episodes
+          schema:
+            items:
+              $ref: '#/definitions/models.Episode'
+            type: array
+        "400":
+          description: Invalid parameters
+          schema: {}
+        "404":
+          description: Season not found
+          schema: {}
+        "500":
+          description: Error getting episodes
+          schema: {}
+      summary: Get episodes of a specific season of a series
+      tags:
+      - series
+  /series/{seriesID}/seasons/{seasonNumber}/episodes/{episodeID}:
+    get:
+      description: Retrieves details of a specific episode of a series based on the
+        provided series ID, season number, and episode ID.
+      parameters:
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      - description: Season Number
+        in: path
+        name: seasonNumber
+        required: true
+        type: string
+      - description: Episode ID
+        in: path
+        name: episodeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Episode details
+          schema:
+            $ref: '#/definitions/models.Episode'
+        "400":
+          description: Invalid parameters
+          schema: {}
+        "500":
+          description: Error getting episode
+          schema: {}
+      summary: Get details of a specific episode of a series
+      tags:
+      - series
+  /signin:
+    post:
+      consumes:
+      - application/json
+      description: Logs in an existing user with the provided email and password.
+      parameters:
+      - description: User email and password
+        in: body
+        name: entry
+        required: true
+        schema:
+          $ref: '#/definitions/handler.entryForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User logged in successfully
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: 'Error signing in: user loggin in failed'
+          schema:
+            type: string
+      summary: User sign in
+      tags:
+      - authentication
+  /signout:
+    get:
+      description: Logs out the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+        "400":
+          description: Error logging out user
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: User sign out
+      tags:
+      - authentication
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user with the provided email and password.
+      parameters:
+      - description: User email and password
+        in: body
+        name: entry
+        required: true
+        schema:
+          $ref: '#/definitions/handler.entryForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User registered successfully
+        "400":
+          description: 'Error signing up: user registration failed'
+          schema:
+            type: string
+      summary: User sign up
+      tags:
+      - authentication
+  /user/{id}:
+    delete:
+      description: Deletes a user based on the provided ID. Requires admin authorization.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+        "400":
+          description: Error deleting user
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - users
+    get:
+      description: Retrieves details of a user based on the provided ID.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Error getting user
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Get details of a specific user
+      tags:
+      - users
+  /users:
+    get:
+      description: Retrieves a list of all users in the system. Requires admin authorization.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Error getting users
+          schema: {}
+      security:
+      - CookieAuth: []
+      summary: Get a list of all users
+      tags:
+      - users
+swagger: "2.0"

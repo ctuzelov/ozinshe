@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"ozinshe/internal/models"
@@ -1135,4 +1136,27 @@ func (s *SeriesStorage) GetByYear(ctx context.Context, yearStart, yearEnd int) (
 	}
 
 	return series, nil
+}
+
+func (s *SeriesStorage) GetEpisode(ctx context.Context, seriesID, seasonNumber, episodeNumber int) (models.Episode, error) {
+	const op = "storage.series.GetEpisode"
+
+	stmt, err := s.storage.db.Prepare(`SELECT * FROM episodes WHERE series_id = $1 AND season_number = $2 AND episode_number = $3`)
+	if err != nil {
+		return models.Episode{}, fmt.Errorf("%s: prepare statement: %w", op, err)
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRowContext(ctx, seriesID, seasonNumber, episodeNumber)
+
+	var e models.Episode
+	err = row.Scan(&e.ID, &e.EpisodeNumber)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Episode{}, fmt.Errorf("%s: no rows in episode: %w", op, err)
+		}
+		return models.Episode{}, fmt.Errorf("%s: scan episode: %w", op, err)
+	}
+
+	return e, nil
 }

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"ozinshe/internal/models"
 	"ozinshe/util"
@@ -39,10 +39,8 @@ func (h *Handler) Middleware(c *gin.Context) {
 func (h *Handler) IsAdminMiddlware(c *gin.Context) {
 	data := c.MustGet("data").(*Data)
 
-	fmt.Println(data)
-
 	if !data.IsAdmin {
-		h.errorpage(c, http.StatusForbidden, nil, "forbidden")
+		h.errorpage(c, http.StatusForbidden, errors.New("admin access required"), "forbidden")
 		c.Abort()
 		return
 	}

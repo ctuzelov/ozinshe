@@ -1,0 +1,1807 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Type \"JWT\" token received from the server",
+        "title": "Ozinshe API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/ages": {
+            "get": {
+                "description": "Retrieves a list of all age categories in the system.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "age categories"
+                ],
+                "summary": "Get a list of all age categories",
+                "responses": {
+                    "200": {
+                        "description": "List of age categories",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AgeCategory"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error retrieving age categories",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Creates a new age category based on the provided age range. Requires admin authorization.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "age categories"
+                ],
+                "summary": "Create a new age category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Age range (e.g., '18-30')",
+                        "name": "age",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Age category created"
+                    },
+                    "400": {
+                        "description": "Error creating age category",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/ages/{id}": {
+            "get": {
+                "description": "Retrieves details of an age category based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "age categories"
+                ],
+                "summary": "Get details of a specific age category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Age category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Age category retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.AgeCategory"
+                        }
+                    },
+                    "400": {
+                        "description": "Error retrieving age category",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes an existing age category based on the provided ID.Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "age categories"
+                ],
+                "summary": "Delete an existing age category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Age category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Age category deleted successfully"
+                    },
+                    "400": {
+                        "description": "Error deleting age category",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/change-password": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Allows the currently authenticated user to change their password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Change password",
+                "parameters": [
+                    {
+                        "description": "New password information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.NewPassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password changed successfully"
+                    },
+                    "400": {
+                        "description": "Error changing password",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/change-profile": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Allows the currently authenticated user to change their profile information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Change profile",
+                "parameters": [
+                    {
+                        "description": "New profile information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.ProfileData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile changed successfully"
+                    },
+                    "400": {
+                        "description": "Error changing profile",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/favorites": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Retrieves a list of all projects (movies and series) favorited by the current user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Get a list of all favorited projects (movies and series) for the current user",
+                "responses": {
+                    "200": {
+                        "description": "List of favorited movies and series",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.Contents"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting favorites",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/genres": {
+            "get": {
+                "description": "Retrieves a list of all genres.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Get a list of all genres",
+                "responses": {
+                    "200": {
+                        "description": "List of genres",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Genre"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting genres",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Creates a new genre with the provided name. Requires admin authorization.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Create a new genre",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Genre name",
+                        "name": "genre",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Genre created"
+                    },
+                    "400": {
+                        "description": "Error creating genre",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/genres/{id}": {
+            "get": {
+                "description": "Retrieves details of a genre based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Get details of a specific genre",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Genre ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Genre details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Genre"
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting genre",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes an existing genre based on the provided ID. Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "genres"
+                ],
+                "summary": "Delete an existing genre",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Genre ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Genre deleted successfully"
+                    },
+                    "400": {
+                        "description": "Error deleting genre",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/movies": {
+            "get": {
+                "description": "Retrieves a list of all movies.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "movies"
+                ],
+                "summary": "Get a list of all movies",
+                "responses": {
+                    "200": {
+                        "description": "List of movies",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Movie"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting movies",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/movies/{id}": {
+            "get": {
+                "description": "Retrieves details of a movie based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "movies"
+                ],
+                "summary": "Get details of a specific movie",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Movie ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Movie"
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting movie",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes an existing movie based on the provided ID. Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "movies"
+                ],
+                "summary": "Delete an existing movie",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Movie ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie deleted successfully"
+                    },
+                    "500": {
+                        "description": "Error deleting movie",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/projects": {
+            "get": {
+                "description": "Retrieves a list of all projects, including both movies and series.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Get a list of all projects (movies and series)",
+                "responses": {
+                    "200": {
+                        "description": "List of movies and series",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.Contents"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting projects",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/projects/create-project": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuthc": []
+                    }
+                ],
+                "description": "Creates a new project based on the provided project type and form data. Requires admin authorization.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Create a new project (movie or series)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project type (movie or series)",
+                        "name": "project_type",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Project cover",
+                        "name": "cover",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Project screenshots",
+                        "name": "screenshots",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_age_category",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_director",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "movie_duration",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "movie_genres",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "movie_keywords",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_link",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_producer",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "movie_title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "movie_year",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "series_age_category",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "series_description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "series_director",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "series_duration",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "series_genres",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Consider an array for keywords",
+                        "name": "series_keywords",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "series_producer",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "series_title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "series_year",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.Project"
+                        }
+                    },
+                    "400": {
+                        "description": "Error creating project",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorData"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/search": {
+            "get": {
+                "description": "Retrieves a list of projects (movies or series) matching the provided filter parameters.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Get a filtered list of projects (movies or series) based on search criteria",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Starting year for filter",
+                        "name": "year_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Ending year for filter",
+                        "name": "year_end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project type (movie or series)",
+                        "name": "project_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Popularity order (asc or desc)",
+                        "name": "popularity_order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Filtered list of movies and series",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.Contents"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting filtered projects",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/projects/{id}": {
+            "get": {
+                "description": "Retrieves details of a project based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Get details of a specific project (movie or series)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project details (series)",
+                        "schema": {
+                            "$ref": "#/definitions/models.Series"
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting project",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Updates an existing project based on the provided ID and form data. Requires admin authorization.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Update an existing project (movie or series)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Project cover",
+                        "name": "cover",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Project screenshots",
+                        "name": "screenshots",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "description": "Project data (JSON)",
+                        "name": "movie_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.movieForm"
+                        }
+                    },
+                    {
+                        "description": "Project data (JSON)",
+                        "name": "series_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.Series"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project updated successfully"
+                    },
+                    "400": {
+                        "description": "Error updating project",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorData"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Deletes an existing project based on the provided ID. Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "projects"
+                ],
+                "summary": "Delete an existing project (movie or series)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Project deleted successfully"
+                    },
+                    "400": {
+                        "description": "Error deleting project",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/projects/{id}/favorites": {
+            "post": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Allows the currently authenticated user to add a project (movie or series) to their favorites list.",
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Add a project to favorites",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Favorite added successfully"
+                    },
+                    "400": {
+                        "description": "Error adding to favorites",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Allows the currently authenticated user to delete a project (movie or series) from their favorites list.",
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Delete a project from favorites",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Favorite added successfully"
+                    },
+                    "400": {
+                        "description": "Error adding to favorites",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/series": {
+            "get": {
+                "description": "Retrieves a list of all series.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series"
+                ],
+                "summary": "Get a list of all series",
+                "responses": {
+                    "200": {
+                        "description": "List of series",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Series"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting series",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/series/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a series based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series"
+                ],
+                "summary": "Delete a series",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Series ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Series deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Error deleting series",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/series/{seriesID}": {
+            "get": {
+                "description": "Retrieves details of a series based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series"
+                ],
+                "summary": "Get details of a specific series",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Series ID",
+                        "name": "seriesID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Series details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Series"
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting series",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/series/{seriesID}/seasons/{seasonNumber}/episodes": {
+            "get": {
+                "description": "Retrieves episodes of a specific season of a series based on the provided series ID and season number.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series"
+                ],
+                "summary": "Get episodes of a specific season of a series",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Series ID",
+                        "name": "seriesID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season Number",
+                        "name": "seasonNumber",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of episodes",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Episode"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Season not found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Error getting episodes",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/series/{seriesID}/seasons/{seasonNumber}/episodes/{episodeID}": {
+            "get": {
+                "description": "Retrieves details of a specific episode of a series based on the provided series ID, season number, and episode ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "series"
+                ],
+                "summary": "Get details of a specific episode of a series",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Series ID",
+                        "name": "seriesID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season Number",
+                        "name": "seasonNumber",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Episode ID",
+                        "name": "episodeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Episode details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Episode"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Error getting episode",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/signin": {
+            "post": {
+                "description": "Logs in an existing user with the provided email and password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "User sign in",
+                "parameters": [
+                    {
+                        "description": "User email and password",
+                        "name": "entry",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.entryForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error signing in: user loggin in failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/signout": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Logs out the currently authenticated user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "User sign out",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful"
+                    },
+                    "400": {
+                        "description": "Error logging out user",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Registers a new user with the provided email and password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "User sign up",
+                "parameters": [
+                    {
+                        "description": "User email and password",
+                        "name": "entry",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.entryForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully"
+                    },
+                    "400": {
+                        "description": "Error signing up: user registration failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Retrieves details of a user based on the provided ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get details of a specific user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting user",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deletes a user based on the provided ID. Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted successfully"
+                    },
+                    "400": {
+                        "description": "Error deleting user",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "CookieAuth": []
+                    }
+                ],
+                "description": "Retrieves a list of all users in the system. Requires admin authorization.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get a list of all users",
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error getting users",
+                        "schema": {}
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.Contents": {
+            "type": "object",
+            "properties": {
+                "movies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Movie"
+                    }
+                },
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Series"
+                    }
+                }
+            }
+        },
+        "handler.Episode": {
+            "type": "object",
+            "properties": {
+                "episode_link": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ErrorData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.NewPassword": {
+            "type": "object",
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ProfileData": {
+            "type": "object",
+            "properties": {
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.Season": {
+            "type": "object",
+            "properties": {
+                "season_episodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.Episode"
+                    }
+                }
+            }
+        },
+        "handler.Series": {
+            "type": "object",
+            "properties": {
+                "series_age_category": {
+                    "type": "string"
+                },
+                "series_description": {
+                    "type": "string"
+                },
+                "series_director": {
+                    "type": "string"
+                },
+                "series_duration": {
+                    "type": "integer"
+                },
+                "series_genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "series_keywords": {
+                    "description": "Consider an array for keywords",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "series_producer": {
+                    "type": "string"
+                },
+                "series_seasons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.Season"
+                    }
+                },
+                "series_title": {
+                    "type": "string"
+                },
+                "series_year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.entryForm": {
+            "type": "object",
+            "properties": {
+                "confirm_password": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.movieForm": {
+            "type": "object",
+            "properties": {
+                "movie_age_category": {
+                    "type": "string"
+                },
+                "movie_description": {
+                    "type": "string"
+                },
+                "movie_director": {
+                    "type": "string"
+                },
+                "movie_duration": {
+                    "type": "integer"
+                },
+                "movie_genres": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "movie_keywords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "movie_link": {
+                    "type": "string"
+                },
+                "movie_producer": {
+                    "type": "string"
+                },
+                "movie_title": {
+                    "type": "string"
+                },
+                "movie_year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.AgeCategory": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "max_age": {
+                    "type": "integer"
+                },
+                "min_age": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Cover": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Episode": {
+            "type": "object",
+            "properties": {
+                "episode_number": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "season_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Genre": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Keyword": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Movie": {
+            "type": "object",
+            "properties": {
+                "age_categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AgeCategory"
+                    }
+                },
+                "cover": {
+                    "$ref": "#/definitions/models.Cover"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Keyword"
+                    }
+                },
+                "popularity": {
+                    "type": "integer"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "screenshots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Screenshot"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "youtube_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Project": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "movies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Movie"
+                    }
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "project_type": {
+                    "type": "string"
+                },
+                "series": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Series"
+                    }
+                }
+            }
+        },
+        "models.Screenshot": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Season": {
+            "type": "object",
+            "properties": {
+                "episodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Episode"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "season_number": {
+                    "type": "integer"
+                },
+                "series_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Series": {
+            "type": "object",
+            "properties": {
+                "age_categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AgeCategory"
+                    }
+                },
+                "cover": {
+                    "$ref": "#/definitions/models.Cover"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Genre"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Keyword"
+                    }
+                },
+                "popularity": {
+                    "type": "integer"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "screenshots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Screenshot"
+                    }
+                },
+                "seasons": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Season"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "required": [
+                "date_of_birth",
+                "email",
+                "name",
+                "number",
+                "password",
+                "user_type"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "number": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "user_type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

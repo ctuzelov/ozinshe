@@ -58,6 +58,7 @@ type Series interface {
 	GetByGenres(ctx context.Context, genres []string) ([]models.Series, error)
 	GetAll(ctx context.Context) ([]models.Series, error)
 	GetFavorites(ctx context.Context, userID int) ([]models.Series, error)
+	GetEpisode(ctx context.Context, seriesID, seasonNumber, episodeNumber int) (models.Episode, error)
 	Update(ctx context.Context, series models.Series) error
 	UpdateCover(ctx context.Context, seriesID int, cover models.Cover) error
 	UpdateScreenshots(ctx context.Context, seriesID int, screenshots []models.Screenshot) error

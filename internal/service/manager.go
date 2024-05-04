@@ -40,6 +40,7 @@ type Series interface {
 	GetAll() ([]models.Series, error)
 	GetFavorites(userID int) ([]models.Series, error)
 	GetSeason(seriesID, seasonNumber int) ([]models.Episode, error)
+	GetEpisode(seriesID, seasonNumber, episodeNumber int) (models.Episode, error)
 	Update(id int, series models.Series) error
 	UpdateCover(id int, image_data models.SavePhoto) error
 	UpdateScreenshots(id int, image_data models.SavePhoto) error

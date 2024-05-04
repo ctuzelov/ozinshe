@@ -8,10 +8,23 @@ import (
 	"ozinshe/cmd/server"
 	"ozinshe/internal/config"
 	"ozinshe/internal/handler"
+	_ "ozinshe/internal/models"
 	"ozinshe/internal/service"
 	storage "ozinshe/internal/storage/postgresql"
 	"syscall"
 )
+
+// @title Ozinshe API
+// @version 1.0
+// description API Server for Ozinshe Application
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.cookie CookieAuth
+// @in cookie
+// @name JWT
+// @description Type "JWT" token received from the server
 
 func main() {
 	cfg := config.MustLoad()

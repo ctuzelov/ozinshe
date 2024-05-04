@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"ozinshe/internal/models"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -52,7 +53,7 @@ func (h *Handler) errorpage(c *gin.Context, status int, err error, errortype str
 
 	errdata := ErrorData{
 		Status:  status,
-		Message: http.StatusText(status),
+		Message: getLastMessageFromError(err),
 	}
 
 	if status == http.StatusInternalServerError {
@@ -61,6 +62,28 @@ func (h *Handler) errorpage(c *gin.Context, status int, err error, errortype str
 
 	c.JSON(status, errdata)
 	c.Abort()
+}
+
+func getLastMessageFromError(err error) string {
+	if err == nil {
+		return ""
+	}
+	// Convert the error to a string
+	errStr := err.Error()
+
+	// Define a regular expression pattern to match the last message after the last colon
+	re := regexp.MustCompile(`[^:]+:\s*([^:]+)$`)
+
+	// Find the last match of the pattern in the error string
+	matches := re.FindStringSubmatch(errStr)
+
+	// If there is a match, return the captured group (message)
+	if len(matches) > 1 {
+		return matches[1]
+	}
+
+	// If no match found, return the entire error string
+	return errStr
 }
 
 func ProcessSavePhoto(form *multipart.Form, dst string) (models.SavePhoto, error) {
@@ -107,4 +130,29 @@ func ProcessParsing(genres []string, ageCategory string, keywords []string) ([]m
 	}
 
 	return Genres, AgeCategories, Keywords
+}
+
+func ProcessParsingSeasons(seasons []Season) []models.Season {
+	var Seasons []models.Season
+
+	for i, season := range seasons {
+		var Episodes []models.Episode
+		for i, episode := range season.Episode {
+			episode := models.Episode{
+				EpisodeNumber: i + 1,
+				Link:          episode.Link,
+			}
+			Episodes = append(Episodes, episode)
+		}
+
+		season := models.Season{
+			SeasonNumber: i + 1,
+			Episodes:     Episodes,
+		}
+
+		Seasons = append(Seasons, season)
+
+	}
+
+	return Seasons
 }

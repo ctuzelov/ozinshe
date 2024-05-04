@@ -13,16 +13,24 @@ import (
 )
 
 type Series struct {
-	Title       string          `json:"title"`
-	Genre       []string        `json:"genres"`
-	Year        int             `json:"year"`
-	Duration    int             `json:"duration"`
-	Keywords    []string        `json:"keywords"` // Consider an array for keywords
-	Description string          `json:"description"`
-	Producer    string          `json:"producer"`
-	Director    string          `json:"director"`
-	AgeCategory string          `json:"age_category"`
-	Seasons     []models.Season `json:"seasons"`
+	Title       string   `json:"series_title"`
+	Genre       []string `json:"series_genres"`
+	Year        int      `json:"series_year"`
+	Duration    int      `json:"series_duration"`
+	Keywords    []string `json:"series_keywords"` // Consider an array for keywords
+	Description string   `json:"series_description"`
+	Producer    string   `json:"series_producer"`
+	Director    string   `json:"series_director"`
+	AgeCategory string   `json:"series_age_category"`
+	Seasons     []Season `json:"series_seasons"`
+}
+
+type Season struct {
+	Episode []Episode `json:"season_episodes"`
+}
+
+type Episode struct {
+	Link string `json:"episode_link"`
 }
 
 func (h *Handler) CreateSeries(c *gin.Context, form *multipart.Form, project *models.Project) {
@@ -35,6 +43,7 @@ func (h *Handler) CreateSeries(c *gin.Context, form *multipart.Form, project *mo
 	}
 
 	Genres, AgeCategories, Keywords := ProcessParsing(series.Genre, series.AgeCategory, series.Keywords)
+	Seasons := ProcessParsingSeasons(series.Seasons)
 
 	series_data := models.Series{
 		Title:         series.Title,
@@ -46,7 +55,7 @@ func (h *Handler) CreateSeries(c *gin.Context, form *multipart.Form, project *mo
 		Producer:      series.Producer,
 		Director:      series.Director,
 		AgeCategories: AgeCategories,
-		Seasons:       series.Seasons,
+		Seasons:       Seasons,
 	}
 
 	images_data, err := ProcessSavePhoto(form, "series")
@@ -75,6 +84,7 @@ func (h *Handler) UpdateSeries(c *gin.Context, form *multipart.Form, seriesID in
 	}
 
 	Genres, AgeCategories, Keywords := ProcessParsing(series.Genre, series.AgeCategory, series.Keywords)
+	Seasons := ProcessParsingSeasons(series.Seasons)
 
 	series_data := models.Series{
 		ID:            seriesID,
@@ -87,7 +97,7 @@ func (h *Handler) UpdateSeries(c *gin.Context, form *multipart.Form, seriesID in
 		Producer:      series.Producer,
 		Director:      series.Director,
 		AgeCategories: AgeCategories,
-		Seasons:       series.Seasons,
+		Seasons:       Seasons,
 	}
 
 	images_data, err := ProcessSavePhoto(form, "series")
@@ -123,6 +133,14 @@ func (h *Handler) UpdateSeries(c *gin.Context, form *multipart.Form, seriesID in
 	c.JSON(http.StatusOK, gin.H{"successfully updated with id - ": seriesID})
 }
 
+// @Summary Get details of a specific series
+// @Description Retrieves details of a series based on the provided ID.
+// @Tags series
+// @Produce json
+// @Param seriesID path string true "Series ID"
+// @Success 200 {object} models.Series "Series details"
+// @Failure 400 {object} error"Error getting series"
+// @Router /series/{seriesID} [get]
 func (h *Handler) GetSeries(c *gin.Context) {
 	id := c.Param("seriesID")
 	seriesID, _ := strconv.Atoi(id)
@@ -134,6 +152,13 @@ func (h *Handler) GetSeries(c *gin.Context) {
 	c.JSON(http.StatusOK, series)
 }
 
+// @Summary Get a list of all series
+// @Description Retrieves a list of all series.
+// @Tags series
+// @Produce json
+// @Success 200 {array} models.Series "List of series"
+// @Failure 400 {object} error "Error getting series"
+// @Router /series [get]
 func (h *Handler) GetAllSeries(c *gin.Context) {
 	series, err := h.Service.Series.GetAll()
 	if err != nil {
@@ -142,14 +167,25 @@ func (h *Handler) GetAllSeries(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, series)
 }
-func (h *Handler) GetFilteredSeries(c *gin.Context) {
-	h.render(c, http.StatusOK, "movie.html", nil)
-}
 
+// @Summary Delete a series
+// @Description Deletes a series based on the provided ID.
+// @Tags series
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path string true "Series ID"
+// @Success 200 "Series deleted successfully"
+// @Failure 400 {object} error "Invalid parameters"
+// @Failure 500 {object} error "Error deleting series"
+// @Router /series/{id} [delete]
 func (h *Handler) DeleteSeries(c *gin.Context) {
 	id := c.Param("id")
-	seriesID, _ := strconv.Atoi(id)
-	err := h.Service.Series.Remove(seriesID)
+	seriesID, err := strconv.Atoi(id)
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "invalid parameters")
+		return
+	}
+	err = h.Service.Series.Remove(seriesID)
 	if err != nil {
 		h.errorpage(c, http.StatusInternalServerError, err, "deleting series")
 		return
@@ -157,6 +193,17 @@ func (h *Handler) DeleteSeries(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Series deleted"})
 }
 
+// @Summary Get episodes of a specific season of a series
+// @Description Retrieves episodes of a specific season of a series based on the provided series ID and season number.
+// @Tags series
+// @Produce json
+// @Param seriesID path string true "Series ID"
+// @Param seasonNumber path string true "Season Number"
+// @Success 200 {array} models.Episode "List of episodes"
+// @Failure 400 {object} error "Invalid parameters"
+// @Failure 404 {object} error "Season not found"
+// @Failure 500 {object} error "Error getting episodes"
+// @Router /series/{seriesID}/seasons/{seasonNumber}/episodes [get]
 func (h *Handler) GetSeason(c *gin.Context) {
 	// 1. Extract Parameters
 	seriesID, err := strconv.Atoi(c.Param("seriesID"))
@@ -185,6 +232,40 @@ func (h *Handler) GetSeason(c *gin.Context) {
 	c.JSON(http.StatusOK, episodes)
 }
 
+// @Summary Get details of a specific episode of a series
+// @Description Retrieves details of a specific episode of a series based on the provided series ID, season number, and episode ID.
+// @Tags series
+// @Produce json
+// @Param seriesID path string true "Series ID"
+// @Param seasonNumber path string true "Season Number"
+// @Param episodeID path string true "Episode ID"
+// @Success 200 {object} models.Episode "Episode details"
+// @Failure 400 {object} error "Invalid parameters"
+// @Failure 500 {object} error "Error getting episode"
+// @Router /series/{seriesID}/seasons/{seasonNumber}/episodes/{episodeID} [get]
 func (h *Handler) GetEpisode(c *gin.Context) {
-	h.render(c, http.StatusOK, "movie.html", nil)
+	var err error
+	seriesID, err := strconv.Atoi(c.Param("seriesID"))
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "invalid parameters")
+		return
+	}
+
+	seasonNumber, err := strconv.Atoi(c.Param("seasonNumber"))
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "invalid parameters")
+		return
+	}
+	episodeID, err := strconv.Atoi(c.Param("episodeID"))
+	if err != nil {
+		h.errorpage(c, http.StatusBadRequest, err, "invalid parameters")
+		return
+	}
+
+	episode, err := h.Service.Series.GetEpisode(seriesID, seasonNumber, episodeID)
+	if err != nil {
+		h.errorpage(c, http.StatusInternalServerError, err, "episode getting failed")
+	}
+
+	c.JSON(http.StatusOK, episode)
 }

@@ -10,23 +10,26 @@ import (
 )
 
 type entryForm struct {
-	Email            string `form:"email"`
-	Password         string `form:"password"`
-	Confirm_password string `form:"confirm_password"`
+	Email            string `form:"email" json:"email"`
+	Password         string `form:"password" json:"password"`
+	Confirm_password string `form:"confirm_password" json:"confirm_password"`
 }
 
-func (h *Handler) SignUpPage(c *gin.Context) {
-	h.render(c, http.StatusOK, "signup.html", nil)
-}
-
-func (h *Handler) SignInPage(c *gin.Context) {
-	h.render(c, http.StatusOK, "signin.html", nil)
-}
-
+// @Summary User sign up
+// @Description Registers a new user with the provided email and password.
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param entry body entryForm true "User email and password"
+// @Success 200  "User registered successfully"
+// @Failure 400 {object} string "Error signing up: email or password is empty"
+// @Failure 400 {object} string "Error signing up: sign up failed"
+// @Failure 400 {object} string "Error signing up: user registration failed"
+// @Router /signup [post]
 func (h *Handler) SignUp(c *gin.Context) {
 	var form entryForm
 
-	if err := c.ShouldBind(&form); err != nil {
+	if err := c.ShouldBindJSON(&form); err != nil {
 		h.errorpage(c, http.StatusBadRequest, err, "binding json in sign up")
 		return
 	}
@@ -57,10 +60,21 @@ func (h *Handler) SignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 }
 
+// @Summary User sign in
+// @Description Logs in an existing user with the provided email and password.
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param entry body entryForm true "User email and password"
+// @Success 200 {array} string "User logged in successfully"
+// @Failure 400 {object} string "Error signing in: email or password is empty"
+// @Failure 400 {object} string "Error signing in: sign up failed"
+// @Failure 400 {object} string "Error signing in: user loggin in failed"
+// @Router /signin [post]
 func (h *Handler) SignIn(c *gin.Context) {
 	var form entryForm
 
-	if err := c.ShouldBind(&form); err != nil {
+	if err := c.ShouldBindJSON(&form); err != nil {
 		h.errorpage(c, http.StatusBadRequest, err, "binding json in sign in")
 		return
 	}
@@ -98,9 +112,17 @@ func (h *Handler) SignIn(c *gin.Context) {
 
 	c.SetCookie("token", token, 3600, "/", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "refresh_token": refresh_token})
+	c.JSON(http.StatusOK, []string{token, refresh_token})
 }
 
+// @Summary User sign out
+// @Description Logs out the currently authenticated user.
+// @Tags authentication
+// @Security CookieAuth
+// @Produce json
+// @Success 200 "Logout successful"
+// @Failure 400 {object} error "Error logging out user"
+// @Router /signout [get]
 func (h *Handler) Signout(c *gin.Context) {
 	data := c.MustGet("data").(*Data)
 	if !data.IsAuthorized {
